@@ -68,12 +68,12 @@ metadata:
     app: wildwest
   name: wildwest
   namespace: wildwest
-#spec:
-#  host: wildwest-wildwest.apps.x2pn.dmz
-#  port:
-#    targetPort: wildwest
-#  to:
-#    kind: Service
-#    name: wildwest
-#    weight: 100
-#  wildcardPolicy: None
+spec:
+  host: wildwest-wildwest.apps.x2pn.dmz
+  port:
+    targetPort: wildwest
+  to:
+    kind: Service
+    name: wildwest
+    weight: 100
+  wildcardPolicy: None
