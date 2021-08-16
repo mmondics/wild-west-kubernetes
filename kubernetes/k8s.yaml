@@ -69,7 +69,6 @@ metadata:
   name: wildwest
   namespace: wildwest
 spec:
-  host: wildwest-wildwest.apps.x2pn.dmz
   port:
     targetPort: wildwest
   to:
