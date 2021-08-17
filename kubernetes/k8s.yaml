@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 0
       containers:
       - name: wildwest
-        image: gshipley/wildwest:latest
+        image: quay.io/mmondics/wildwest:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
