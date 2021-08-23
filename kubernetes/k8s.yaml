@@ -58,12 +58,9 @@ subjects:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  labels:
-    app: wildwest
   name: wildwest
   namespace: wildwest
 spec:
-  host: wildwest-wildwest.apps.x3wk.dmz
   port:
     targetPort: wildwest
   to:
