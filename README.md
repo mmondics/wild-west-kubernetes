@@ -1,6 +1,6 @@
 # Building a Multiarchitecture Container Image and Deploying on IBM Z and x86 with Red Hat Advanced Cluster Management
 
-<mark>You can find a video of this demonstration here: <mark>
+<mark>You can find a video of this demonstration here: ***work in progress***<mark>
 
 ## Tools Used
 
@@ -21,9 +21,16 @@ The goal of this demo is to show how one can build a multiarchitecture container
 
 Red Hat Advanced Cluster Management provides end-to-end management visibility and control to manage Kubernetes environments such as Red Hat OpenShift. With RHACM, you can manage & create clusters along with the applications running on them whether the clusters are on premesis, in the public cloud, or built on different architectures.
 
+![RHACM text](images/rhacm-text.png)
+
+![RHACM Logo](images/rhacm-logo.png)
+
 RHACM is a containerized application deployed as an operator on an OpenShift cluster, known as the Hub cluster. RHACM and this Hub cluster can then have visibility into other Kubernetes clusters known as Managed clusters.
 
 With a solution like RHACM managing multiple clusters of various architectures, a common concern is that an application might run on one cluster, but not on another depending on how the container image was built. This is a common scenario due to a variety of reasons, such as bringing in a new architecture cluster into an overarching hybrid cloud environment, or simply because developers develop on the systems they are used to and have available.
+
+![RHACM High Level](images/rhacm-high-level.png)
+
 
 In this demo, we are using a RHACM Hub cluster that is running on x86 on-premises and managing-to four managed clusters - three on IBM Z, and one on x86 cluster. Note that in the picture below, the local managed cluster counts as one of the clusters in the overview.
 
@@ -361,7 +368,7 @@ We will push the manifest list with following command:
 
 `podman manifest push quay.io/mmondics/wildwest-multiarch:v1 quay.io/mmondics/wildwest-multiarch:v1`
 
-```txt
+```text
 [mmondics@ocppabs0 ~]$ podman manifest push quay.io/mmondics/wildwest-multiarch:v1 quay.io/mmondics/wildwest-multiarch:v1
 Getting image list signatures
 Copying 2 of 2 images in list
@@ -403,6 +410,30 @@ With our new manifest in quay, we can edit the `k8s.yaml` file to use the manife
         - containerPort: 8080
 ```
 
-Back in the RHACM console on the application page, click `Sync` and wait for the pods to recreate on `atsocppa`. This will take a minute or two.
+One of the great features of RHACM is its use of *Channels*. A Channel is a Kubernetes object that represents the repository where our code is stored. Likely as you are reading this sentance, RHACM is noticing that the `k8s.yaml` file in the GitHub repository referenced in our Channel has been modified, and it is reconciling the differences. Because we modified the Deployment section of the *k8s.yaml* file, the old Deployment is removed, a new one is created, and therefore new pods are deployed on both OpenShift clusters that use the multiarch manifest list.
 
-### Cleanup
+*Note: If you're a quick reader and RHACM has not yet reconciled its changes, you can force it to do so by clicking `Sync` in the RHACM console application page.
+
+![sync](images/sync.png)
+
+It should take less than a minute for the pods to regenerate on both the IBM Z and VMware vSphere OpenShift clusters, and our errors should no longer be present.
+
+![topology-noerrors](images/topology-noerrors.png)
+
+![replicaset-noerror](images/replicaset-noerror.png)
+
+### Accessing the Applications
+
+Both of our applications are now accessible through their routes. Since we're already on the RHACM console, we can simply click on the circle representing the wildwest Route in the topology diagram.
+
+On the new page that opens, we find a link to `Launch Route URL`. 
+
+![launch-route-url](images/launch-route-url.png)
+
+As a quick exercise, we can launch each route and confirm that the same exact application is running on both clusters - one on IBM Z, and one on VMware vSphere.
+
+![both-routes](images/both-routes.png)
+
+### Wrap Up
+
+In this demo, we have shown just how easily one can use a Dockerfile to modify an x86-only container image so it runs on the IBM Z architecture. We then created a manifest list that acts as a multiarch image which can be deployed to multiple heterogenous OpenShift clusters on different platforms by Red Hat Advanced Cluster Management.
