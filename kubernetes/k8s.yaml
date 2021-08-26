@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 0
       containers:
       - name: wildwest
-        image: quay.io/mmondics/wildwest-multiarch:v1
+        image: quay.io/mmondics/wildwest:v1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
