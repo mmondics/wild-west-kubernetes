@@ -13,11 +13,11 @@ You can find a video of this demonstration here: ***work in progress***
 
 ## Goal of Demonstration
 
-The goal of this demo is to show how one can build a multiarchitecture container image that supports both IBM Z and x86 architectures from a container image originally built just for x86. We will then use RHACM to deploy this multiarchitecture container image to OpenShift clusters of each architectures at the same time.
+The goal of this demo is to show how one can build a multiarchitecture container image that supports both IBM Z and x86 architectures from a container image originally built for x86 alone. We will then use Red Hat Advanced Cluster Management (RHACM) to deploy this multiarchitecture container image to OpenShift clusters of each architectures at the same time.
 
 ## Demo Steps
 
-### Explore RHACM
+### Explore Red Hat Advanced Cluster Management
 
 Red Hat Advanced Cluster Management provides end-to-end management visibility and control to manage Kubernetes environments such as Red Hat OpenShift. With RHACM, you can manage & create clusters along with the applications running on them whether the clusters are on premesis, in the public cloud, or built on different architectures.
 
@@ -25,13 +25,13 @@ Red Hat Advanced Cluster Management provides end-to-end management visibility an
 
 ![RHACM Logo](images/rhacm-logo.png)
 
-RHACM is a containerized application deployed as an operator on an OpenShift cluster, known as the Hub cluster. RHACM and this Hub cluster can then have visibility into other Kubernetes clusters known as Managed clusters.
+RHACM is a containerized application deployed as an operator on an OpenShift cluster, known as the Hub cluster. RHACM and this Hub cluster have visibility into, and control of, other Kubernetes clusters known as Managed clusters.
 
-With a solution like RHACM managing multiple clusters of various architectures, a common concern is that an application might run on one cluster, but not on another depending on how the container image was built. This is a common scenario due to a variety of reasons, such as bringing in a new architecture cluster into an overarching hybrid cloud environment, or simply because developers develop on the systems they are used to and have available.
+With a solution like RHACM managing multiple clusters of various architectures, a common issue is that an application might run on one cluster, but not on another depending on how the container image was built. This is a common scenario due to a variety of reasons, such as bringing in a new architecture cluster into an overarching hybrid cloud environment, or simply because developers create applications on the systems they are used to and have available.
 
 ![RHACM High Level](images/rhacm-high-level.png)
 
-In this demo, we are using a RHACM Hub cluster that is running on x86 on-premises and managing-to four managed clusters - three on IBM Z, and one on x86 cluster. Note that in the picture below, the local managed cluster counts as one of the clusters in the overview.
+In this demo, we are using a RHACM Hub cluster that is running on x86 on-premises and managing-to four managed clusters - three on IBM Z, and one on x86. Note that in the picture below, the local managed cluster also shows as a managed cluster in the overview.
 
 ![RHACM Console](images/rhacm-console.png)
 
@@ -43,17 +43,17 @@ If we look at the Infrastructure / Clusters tab, all of our managed clusters wil
 
 ![Infrastructure/Clusters](images/infrastructure-clusters.png)
 
-As mentioned earlier, you can see that we are managing various OpenShift clusters on IBM Z and VMware vSphere.
+As mentioned above, you can see that we are managing various OpenShift clusters on IBM Z and VMware vSphere.
 
-RHACM can not only provide visibility into your hybrid cloud ecosystem of Kubernetes clusters, it can also deploy and manage applications across all of them from a single pane of glass. we will move on to the next section to do so.
+RHACM can not only provide visibility into your hybrid cloud ecosystem of Kubernetes clusters, it can also deploy and manage applications across all of them from a single "pane of glass".
 
 ### Deploy  Initial Application from RHACM
 
 In a hybrid cloud environment with multiple clusters like this one, there are scenarious where an organization might want to deploy an application to a few of their clusters, but not necessarily all of them. Organizations might have tens, hundreds, or even thousands of Kubernetes clusters in different regions & datacenters, for different teams, or split up by dev/test/QA/production. Whatever the case, we need a mechanism to pick and choose which clusters to deploy an Application to. With RHACM, this is done by using **labels**.
 
-From our RHACM Clusters page, we will add labels to two of our clusters - one on IBM Z, and one on VMware vSphere.
+From our RHACM Clusters page, we will add labels to two of our clusters - one on IBM Z, and one on VMware vSphere. The clusters we label will be where we deploy our application in a later step.
 
-Click on the three dots on the far right of the cluster then selecting edit labels:
+Click on the three dots on the far right of an IBM Z cluster then selecting edit labels:
 
 ![edit-labels-1](images/edit-labels-1.png)
 
@@ -61,17 +61,17 @@ In the text box, type `demo=multiarch`, press `enter`, and then click `Save`.
 
 ![edit-labels-2](images/edit-labels-1.png)
 
-We'll repeat this step for another cluster of a different architecture.
+We'll repeat this step for another cluster running on VMware vSphere.
 
 ![edited-labels](images/edited-labels.png)
 
-With matching labels applied to two of our managed clusters, we can now create an Application and dictate which clusters to deploy to.
+With matching labels applied to two of our managed clusters, we can now create an application and dictate which clusters to deploy to.
 
-In the RHACM Console, we navigate to the Applications page from the left-side menu, then click on the `Create Application` button.
+In the RHACM Console, we navigate to the applications page from the left-side menu, then click on the `Create Application` button.
 
 ![create-application](images/create-application.png)
 
-On the new page, we will enter the following details about our Application. Our app will be a browser-based video game written in Spring Boot and Phaser where you shoot Kubernetes objects that appear. This is an interesting sample application because if you successfully shoot the Kubernetes objects, they will actually be deleted off of your managed OpenShift cluster (don't worry - your application pods will automatically regenerate thanks to Kubernetes).
+On the new page, we will enter the following details about our application. Our app will be a browser-based video game written in Spring Boot and Phaser where you shoot Kubernetes objects that appear. This is an interesting sample application because if you successfully shoot the Kubernetes objects, they will actually be deleted off of your managed OpenShift cluster (don't worry - your application pods will automatically regenerate thanks to Kubernetes).
 
 The source repo for our sample application is here: <https://github.com/gshipley/wild-west-kubernetes>.
 
@@ -93,7 +93,7 @@ We are redirected to a new page for our `wildwest` application, and the Kubernet
 
 ![deployed-application](images/deployed-application.png)
 
-As the objects finish creating, we have some warnings and errors in the Cluster resource status section. This indicates that some of our deployed application components are in error states.
+As the objects finish creating, we have some warnings and errors in the Cluster resource status section. This indicates that some of our deployed application components did not successfully create.
 
 Scrolling further down this page, we find a Topology diagram for the application we just created.
 
@@ -103,13 +103,13 @@ Our ReplicaSet has errors occuring, which in turn affects the Deployment that ow
 
 ![replicaset-error](images/replicaset-error.png)
 
-We see that our application pods successfully created on the x86 cluster, but are in CrashLoopBackOff on the IBM Z cluster. Because of the purpose of this demo, we know that the container image used to deploy this wildwest application was built only for x86 architectures. However, in the next step we will see how a user could determine this if they didn't already know.
+We see that our application pods successfully created on the x86 cluster, but are in CrashLoopBackOff on the IBM Z cluster. Because of the purpose of this demo, we know that the container image used to deploy this wildwest application was built only for x86 architectures. However, in the next step we will see how a user could determine the source of the error if they didn't already know.
 
 ### Investigate Application Error on IBM Z Cluster
 
 From the errors we see in RHACM, we know the application pods are the source of the errors with the ReplicaSet and Deployment. We will investigate our pod logs with the `oc` command line.
 
-After logging into our OpenShift on IBM Z cluster in a terminal session, we will first identify our pod names with `oc get pods -n wildwest`, and then check their logs with `oc logs pod/<podname> 0n wildwest`.
+After logging into our OpenShift on IBM Z cluster in a terminal session, we will first identify our pod names with `oc get pods -n wildwest`, and then check their logs with `oc logs pod/<podname> -n wildwest`.
 
 ```txt
 [mmondics@ocppabs0 ~]$ oc get pods -n wildwest
@@ -158,7 +158,7 @@ It is clear that this container image was compiled solely for the amd64 architec
 
 Let's take a look at the Dockerfile that was used to build the wildwest container image. You can find the Dockerfile in this GitHub repository or pasted below.
 
-To pull the repository to your local machine, you can the command `git clone https://github.com/mmondics/wild-west-kubernetes`
+To pull the repository to your local machine, you can run the command `git clone https://github.com/mmondics/wild-west-kubernetes`
 
 ```Dockerfile
 FROM maven:3.6.2-jdk-11 as builder
@@ -186,7 +186,7 @@ Looking further down this page, we see another tag, `3.6.2-jdk-11-openj9`.
 
 Notice that there is a `3.6.2-jdk-11-openj9` tag that includes `s390x` as one of the architectures, along with `amd64` and `pp64le`. This is a multiarchitecture maven build image that we can use to build a new container image that can run on s390x.
 
-Let's edit our Dockerfile to use this maven image that supports `s390x` instead.
+Let's edit our Dockerfile to instead use this maven image that supports `s390x`.
 
 ```Dockerfile
 FROM maven:3.6.2-jdk-11-openj9 as builder # <---------
@@ -264,7 +264,7 @@ Storing signatures
 847d228f6b3e52439a34c4acf3a80ae0cb3b8d30b95c4c2a92e4d91a192045a2
 ```
 
-Our new image is present and on our machine. We can view it, along with the original `v1`, with `podman images`.
+Our new image is present on our machine. We can view it, along with the original `v1`, with `podman images`.
 
 ```txt
 [mmondics@ocppabs0 wild-west-kubernetes]$ podman images
@@ -418,7 +418,7 @@ One of the great features of RHACM is its use of *Channels*. A Channel is a Kube
 
 ![sync](images/sync.png)
 
-It should take less than a minute for the pods to regenerate on both the IBM Z and VMware vSphere OpenShift clusters, and our errors should no longer be present.
+It should take less than a minute for the pods to regenerate on both the IBM Z and VMware vSphere OpenShift clusters, and the errors should no longer be present.
 
 ![topology-noerrors](images/topology-noerrors.png)
 
@@ -438,4 +438,4 @@ As a quick exercise, we can launch each route and confirm that the same exact ap
 
 ### Wrap Up
 
-In this demo, we have shown just how easily one can use a Dockerfile to modify an x86-only container image so it runs on the IBM Z architecture. We then created a manifest list that acts as a multiarch image which can be deployed to multiple heterogenous OpenShift clusters on different platforms by Red Hat Advanced Cluster Management.
+In this demo, we have shown just how easily one can use a Dockerfile to modify an x86-only container image so it runs on the IBM Z architecture. We then created a manifest list that acts as a multiarchitecture image which can be deployed to multiple heterogenous OpenShift clusters on different platforms by Red Hat Advanced Cluster Management.
