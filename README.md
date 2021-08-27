@@ -1,6 +1,6 @@
 # Building a Multiarchitecture Container Image and Deploying on IBM Z and x86 with Red Hat Advanced Cluster Management
 
-<mark>You can find a video of this demonstration here: ***work in progress***<mark>
+You can find a video of this demonstration here: ***work in progress***
 
 ## Tools Used
 
@@ -31,7 +31,6 @@ With a solution like RHACM managing multiple clusters of various architectures, 
 
 ![RHACM High Level](images/rhacm-high-level.png)
 
-
 In this demo, we are using a RHACM Hub cluster that is running on x86 on-premises and managing-to four managed clusters - three on IBM Z, and one on x86 cluster. Note that in the picture below, the local managed cluster counts as one of the clusters in the overview.
 
 ![RHACM Console](images/rhacm-console.png)
@@ -58,7 +57,7 @@ Click on the three dots on the far right of the cluster then selecting edit labe
 
 ![edit-labels-1](images/edit-labels-1.png)
 
-In the text box, type `demo=multiarch`, press `enter`, and then click `Save`. 
+In the text box, type `demo=multiarch`, press `enter`, and then click `Save`.
 
 ![edit-labels-2](images/edit-labels-1.png)
 
@@ -77,13 +76,14 @@ On the new page, we will enter the following details about our Application. Our 
 The source repo for our sample application is here: <https://github.com/gshipley/wild-west-kubernetes>.
 
 On the application creation page, we enter the following parameters:
+
 * Name: `wildwest-multiarch`
 * Namespace: `wildwest`
 * Repository Type: `Git`
 * URL: <https://github.com/mmondics/wild-west-kubernetes>
 * Deploy application resources only on clusters matching specific labels:
-    * Label Name: `demo`
-    * Label Value: `multiarch`
+  * Label Name: `demo`
+  * Label Value: `multiarch`
 
 *Note: if you're interested, you can toggle the YAML:Off button to `YAML:On to see the components and structure of the application we're creating.*
 
@@ -157,6 +157,8 @@ It is clear that this container image was compiled solely for the amd64 architec
 ### Rebuild Container Image as Multi-Architecture
 
 Let's take a look at the Dockerfile that was used to build the wildwest container image. You can find the Dockerfile in this GitHub repository or pasted below.
+
+To pull the repository to your local machine, you can the command `git clone https://github.com/mmondics/wild-west-kubernetes`
 
 ```Dockerfile
 FROM maven:3.6.2-jdk-11 as builder
@@ -302,11 +304,11 @@ quay.io/mmondics/wildwest  v2
 
 Now let's use podman to create a single *manifest* list that can be used to deploy both versions of the wildwest container image at the same time.
 
-So what is a manifest? A *manifest list* is a collection of container images, often of different architectures. Manifest lists include details about each container image they contain, such as each image's supported OS and architecture, size, and digests. 
+So what is a manifest? A *manifest list* is a collection of container images, often of different architectures. Manifest lists include details about each container image they contain, such as each image's supported OS and architecture, size, and digests.
 
 Manifest lists can be used the same was as normal container images e.g. you can run `podman pull`, `podman push`, and other commands against them.
 
-We will create a new manifest list with: `podman manifest create quay.io/mmondics/wildest-multiarch:v1`
+We will create a new manifest list with: `podman manifest create quay.io/mmondics/wildwest-multiarch:v1`
 
 ```txt
 [mmondics@ocppabs0 wild-west-kubernetes]$ podman manifest create quay.io/mmondics/wildest-multiarch:v1
@@ -426,7 +428,7 @@ It should take less than a minute for the pods to regenerate on both the IBM Z a
 
 Both of our applications are now accessible through their routes. Since we're already on the RHACM console, we can simply click on the circle representing the wildwest Route in the topology diagram.
 
-On the new page that opens, we find a link to `Launch Route URL`. 
+On the new page that opens, we find a link to `Launch Route URL`.
 
 ![launch-route-url](images/launch-route-url.png)
 
