@@ -1,7 +1,5 @@
 # Building a Multiarchitecture Container Image and Deploying on IBM Z and x86 with Red Hat Advanced Cluster Management
 
-You can find a video of this demonstration here: ***work in progress***
-
 ## Tools Used
 
 1. Red Hat Advanced Cluster Management (RHACM)
@@ -45,7 +43,7 @@ If we look at the Infrastructure / Clusters tab, all of our managed clusters wil
 
 As mentioned above, you can see that we are managing various OpenShift clusters on IBM Z and VMware vSphere.
 
-RHACM can not only provide visibility into your hybrid cloud ecosystem of Kubernetes clusters, it can also deploy and manage applications across all of them from a single "pane of glass".
+RHACM can not only provide visibility into your hybrid cloud ecosystem of Kubernetes clusters, it can also deploy and manage applications across all of them from a single pane of glass.
 
 ### Deploy  Initial Application from RHACM
 
@@ -57,7 +55,7 @@ Click on the three dots on the far right of an IBM Z cluster then selecting edit
 
 ![edit-labels-1](images/edit-labels-1.png)
 
-In the text box, type `demo=multiarch`, press `enter`, and then click `Save`.
+In the text box, type `demo=multiarch`, press *enter*, and then click *Save*.
 
 ![edit-labels-2](images/edit-labels-1.png)
 
@@ -67,7 +65,7 @@ We'll repeat this step for another cluster running on VMware vSphere.
 
 With matching labels applied to two of our managed clusters, we can now create an application and dictate which clusters to deploy to.
 
-In the RHACM Console, we navigate to the applications page from the left-side menu, then click on the `Create Application` button.
+In the RHACM Console, we navigate to the applications page from the left-side menu, then click the *Create Application* button.
 
 ![create-application](images/create-application.png)
 
@@ -85,11 +83,11 @@ On the application creation page, we enter the following parameters:
   * Label Name: `demo`
   * Label Value: `multiarch`
 
-*Note: if you're interested, you can toggle the YAML:Off button to `YAML:On to see the components and structure of the application we're creating.*
+*Note: if you're interested, you can toggle the YAML:Off button to YAML:On to see the components and structure of the application we're creating.*
 
-Click `Save` in the top right of the page
+Click *Save* in the top right of the page
 
-We are redirected to a new page for our `wildwest` application, and the Kubernetes / OpenShift components described in `k8s.yaml` are created on the two target clusters. This includes a Deployment, Service, Route, and RoleBinding.
+We are redirected to a new page for our *wildwest* application, and the Kubernetes / OpenShift components described in `k8s.yaml` are created on the two target clusters. This includes a Deployment, Service, Route, and RoleBinding.
 
 ![deployed-application](images/deployed-application.png)
 
@@ -412,9 +410,9 @@ With our new manifest in quay, we can edit the `k8s.yaml` file to use the manife
         - containerPort: 8080
 ```
 
-One of the great features of RHACM is its use of *Channels*. A Channel is a Kubernetes object that represents the repository where our code is stored. Likely as you are reading this sentance, RHACM is noticing that the `k8s.yaml` file in the GitHub repository referenced in our Channel has been modified, and it is reconciling the differences. Because we modified the Deployment section of the *k8s.yaml* file, the old Deployment is removed, a new one is created, and therefore new pods are deployed on both OpenShift clusters that use the multiarch manifest list.
+One of the great features of RHACM is its use of *Channels*. A Channel is a Kubernetes object that represents the repository where our code is stored. Likely as you are reading this sentance, RHACM is noticing that the `k8s.yaml` file in the GitHub repository referenced in our Channel has been modified, and it is reconciling the differences. Because we modified the Deployment section of the `k8s.yaml` file, the old Deployment is removed, a new one is created, and therefore new pods are deployed on both OpenShift clusters that use the multiarch manifest list.
 
-*Note: If you're a quick reader and RHACM has not yet reconciled its changes, you can force it to do so by clicking `Sync` in the RHACM console application page.
+*Note: If you're a quick reader and RHACM has not yet reconciled its changes, you can force it to do so by clicking `Sync` in the RHACM console application page.*
 
 ![sync](images/sync.png)
 
@@ -438,4 +436,4 @@ As a quick exercise, we can launch each route and confirm that the same exact ap
 
 ### Wrap Up
 
-In this demo, we have shown just how easily one can use a Dockerfile to modify an x86-only container image so it runs on the IBM Z architecture. We then created a manifest list that acts as a multiarchitecture image which can be deployed to multiple heterogenous OpenShift clusters on different platforms by Red Hat Advanced Cluster Management.
+In this demo, we have shown how easily one can use a Dockerfile to modify an x86-only container image so it runs on the IBM Z architecture. We then created a manifest list that acts as a multiarchitecture image which can be deployed to multiple heterogenous OpenShift clusters on different platforms by Red Hat Advanced Cluster Management.
